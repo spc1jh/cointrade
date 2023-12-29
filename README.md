@@ -33,3 +33,8 @@ pip install pybithumb requests schedule numpy pandas python-dotenv
 ```
 
 
+## 실행
+
+```
+python bithumb_racehorse.py
+```
