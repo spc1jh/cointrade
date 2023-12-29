@@ -91,7 +91,7 @@ def f_buycoin(coin):
     # 코인 현재가 확인
     current_price = Bithumb.get_current_price(coin)
     # 내가 사고자 하는 금액을 코인 금액으로 나눈 금액 = 즉 코인 개수가 나옴
-    current_coin_count = mywallet / current_price
+    current_coin_count = float(mywallet) / float(current_price)
 
     print("매수 코인금액: "+ str(current_price) +",  코인개수 : "+ str(current_coin_count))
     desc = bithumb.buy_market_order(coin,current_coin_count)
@@ -112,7 +112,8 @@ def f_check_price(coin, last_order_price):
     print(diff_price)
 
     # 목표가와 손절가
-    if(diff_price) > float(target_price) or (diff_price) < float(stop_loss):
+    if float(diff_price) >= float(target_price) or float(diff_price) <= float(stop_loss):
+        print("매도 시작(diff_price): "+ str(diff_price))
         f_sellcoin(coin, total_unit)
         return False
     
