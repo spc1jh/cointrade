@@ -121,7 +121,7 @@ def f_check_price(coin, last_order_price):
 
 def f_sellcoin(coin, total_unit):
     desc = bithumb.sell_market_order(order_currency=coin, unit=float(total_unit), payment_currency="KRW")
-    print("매도 : " +coin+ " " + float(total_unit))
+    print("매도 : " +coin+ " " + str(total_unit))
     print(desc)
 
 has_run = False  # 함수 실행 여부를 나타내는 전역 변수
@@ -131,7 +131,7 @@ def f_start():
     print(datetime.datetime.now().time())
     has_run = True
 
-def main():
+def start():
 
     # 특정 시간에 실행되게 함
     schedule.every().day.at("00:00:10").do(f_start) # KST 기준
@@ -142,7 +142,7 @@ def main():
             break
         time.sleep(1)
 
-
+def main():
     # 코인 데이터 전체 확인
     df = f_getdata_request()
 
@@ -153,7 +153,6 @@ def main():
     # 시장가매수
     desc = f_buycoin(topcoin)
 
-    
     # 개선해야 될 항목
     # 매수했던 내역에 대해서 확인하여 매수 가격 확인
     # 이부분이 실제 내가 가지고 있는 자산과 다를수 있다. 
@@ -171,6 +170,6 @@ def main():
 
 if __name__ == '__main__':
     
+    start()
     main()
-    
     
