@@ -34,9 +34,7 @@ https://chromedriver.chromium.org/downloads
 ## pip 인스톨
 
 ```
-pip install pybithumb
-pip install requests
-pip install schedule
+pip install pybithumb requests schedule numpy pandas python-dotenv
 
 ```
 
