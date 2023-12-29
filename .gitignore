@@ -162,3 +162,9 @@ cython_debug/
 
 files/
 files/*
+
+py-env/
+py-env/*
+py-env\
+py-env\*
+
