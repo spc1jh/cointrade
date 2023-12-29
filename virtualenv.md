@@ -10,7 +10,7 @@ virtualenv py-env
 ## 실행 명령어
 
 ```
-윈도우 : .\py-env\bin\activate
+윈도우 : .\py-env\Scripts\activate
 리눅스 : source py-env/bin/activate
 ```
 
