@@ -128,10 +128,12 @@ has_run = False  # 함수 실행 여부를 나타내는 전역 변수
 
 def f_start():
     global has_run
-    print(datetime.datetime.now().time())
+    print("start: "+ str(datetime.datetime.now().time()))
     has_run = True
 
 def start():
+    
+    print("coin trade program start & now: "+ str(datetime.datetime.now().time()))
 
     # 특정 시간에 실행되게 함
     schedule.every().day.at("00:00:10").do(f_start) # KST 기준
@@ -171,5 +173,5 @@ def main():
 if __name__ == '__main__':
     
     start()
-    main()
+    # main()
     
