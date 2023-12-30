@@ -158,6 +158,7 @@ def main():
     # 개선해야 될 항목
     # 매수했던 내역에 대해서 확인하여 매수 가격 확인
     # 이부분이 실제 내가 가지고 있는 자산과 다를수 있다. 
+    time.sleep(2)
     last_order_status = bithumb.get_order_completed(desc)
     last_order_price = last_order_status['data']['contract'][0]['price']
 
