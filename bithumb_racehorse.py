@@ -100,6 +100,23 @@ def f_buycoin(coin):
 
     return desc
 
+MAX_RETRY = 3  # 최대 재시도 횟수
+def get_last_order_price(desc):
+    retry_count = 0
+
+    while retry_count < MAX_RETRY:
+        try:
+            last_order_status = bithumb.get_order_completed(desc)
+            last_order_price = last_order_status['data']['contract'][0]['price']
+            return last_order_price  # 값을 얻으면 반복문 탈출
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            retry_count += 1
+            print(f"Retrying... (Retry count: {retry_count})")
+
+    print("Failed to retrieve last order price after multiple attempts.")
+    return None  # 최대 재시도 횟수를 초과한 경우 None 반환 혹은 다른 에러 처리 방법 선택 가능
 
 
 # 목표가 도달하는지 확인하는 함수
@@ -160,8 +177,8 @@ def main():
     # 매수했던 내역에 대해서 확인하여 매수 가격 확인
     # 이부분이 실제 내가 가지고 있는 자산과 다를수 있다. 
     time.sleep(2)
-    last_order_status = bithumb.get_order_completed(desc)
-    last_order_price = last_order_status['data']['contract'][0]['price']
+    # 최종 주문 확인
+    last_order_price = get_last_order_price(desc)
 
     # 매도 될때까지 수익률 조회하다가 원하는 수익률이 되면 전량 매도
     while True:
