@@ -84,6 +84,7 @@ def f_getTopCoin(df):
     df['price_diff_percent'] = df['price_diff'] / df['opening_price'] * 100
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df_sorted = df.sort_values(by="price_diff_percent", ascending=False)
+    print(df_sorted.head())
     return df_sorted.iloc[0]['coin_name']
 
 # 코인 시장가 매수 
