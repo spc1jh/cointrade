@@ -35,7 +35,8 @@ mywallet = os.environ.get('mywallet')
 target_price = os.environ.get('target_price') 
 # 손절가 (%)
 stop_loss = os.environ.get('stop_loss') 
-
+# 경주마 매매 시작 시간
+race_start_time = os.environ.get('race_start_time') 
 
 # UNIX 타임스탬프를 UTC 표준시로 변환하는 함수
 def convert_unix_to_utc(unix_time):
@@ -96,7 +97,7 @@ def f_buycoin(coin):
 
     print("매수 코인금액: "+ str(current_price) +",  코인개수 : "+ str(current_coin_count))
     desc = bithumb.buy_market_order(coin,current_coin_count)
-    print(desc)
+    # print(desc)
 
     return desc
 
@@ -120,7 +121,7 @@ def get_last_order_price(desc):
 
 
 # 목표가 도달하는지 확인하는 함수
-def f_check_price(coin, last_order_price):
+def f_check_price(coin, last_order_price, topcoin_openprice):
     my_balance = bithumb.get_balance(coin)
     current_price = bithumb.get_current_price(coin)
     total_unit = my_balance[0]
@@ -129,13 +130,21 @@ def f_check_price(coin, last_order_price):
     diff_price = (float(current_price)  - float(last_order_price)) / float(last_order_price) * 100
     print(diff_price)
 
-    # 목표가와 손절가
-    if float(diff_price) >= float(target_price) or float(diff_price) <= float(stop_loss):
-        print("매도 시작(diff_price): "+ str(diff_price))
+    ### 매도 조건
+    # 목표가 이상일때 매도
+    
+    if float(diff_price) >= float(target_price):
+        print("이익 매도 시작(diff_price): "+ str(diff_price))
         f_sellcoin(coin, total_unit)
         return False
+    # 손절 % 에 도달하면서 시초가가 깨졌을때 매도를 한다.
+    elif (float(diff_price) <= float(stop_loss) and float(current_price) <= float(topcoin_openprice)) :
+        print("손절 매도 시작(diff_price): "+ str(diff_price))
+        f_sellcoin(coin, total_unit)
+        return False
+    else:
+        return True
     
-    return True
 
 def f_sellcoin(coin, total_unit):
     desc = bithumb.sell_market_order(order_currency=coin, unit=float(total_unit), payment_currency="KRW")
@@ -154,7 +163,7 @@ def start():
     print("coin trade program start & now: "+ str(datetime.datetime.now().time()))
 
     # 특정 시간에 실행되게 함
-    schedule.every().day.at("00:00:10").do(f_start) # KST 기준
+    schedule.every().day.at(race_start_time).do(f_start) # KST 기준
     
     while True:
         schedule.run_pending()
@@ -169,20 +178,24 @@ def main():
     # top coin 추출
     topcoin = f_getTopCoin(df)
     print(topcoin)
+    
+    # topcoin의 opening price
+    topcoin_openprice = df.loc[df["coin_name"] == topcoin, 'opening_price'].values[0]
 
     # 시장가매수
     desc = f_buycoin(topcoin)
+    print(desc)
 
-    # 개선해야 될 항목
-    # 매수했던 내역에 대해서 확인하여 매수 가격 확인
-    # 이부분이 실제 내가 가지고 있는 자산과 다를수 있다. 
     time.sleep(2)
-    # 최종 주문 확인
-    last_order_price = get_last_order_price(desc)
+    # 매수했던 내역에 대해서 확인하여 매수 가격 확인
+    result = bithumb.user_transactions(0,20,1,topcoin)
+    # print(result["data"][0]["price"])
+    last_order_price = result["data"][0]["price"]
+    print("매수가: ", last_order_price)
 
     # 매도 될때까지 수익률 조회하다가 원하는 수익률이 되면 전량 매도
     while True:
-        check_status = f_check_price(topcoin, last_order_price)
+        check_status = f_check_price(topcoin, last_order_price, topcoin_openprice)
         time.sleep(1)
         if check_status == False:
             break

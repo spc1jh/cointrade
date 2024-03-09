@@ -22,6 +22,8 @@ mywallet = 50000
 target_price = 5 
 # 손절가 (%)
 stop_loss = -5
+# 경주마 매매 start_time
+race_start_time=00:01:50
 
 ```
 
